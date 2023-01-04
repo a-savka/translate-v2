@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:layouts_1/main_navigation.dart';
+import 'package:translate_1/main_navigation.dart';
 
 class DefaultDrawer extends StatelessWidget {
   const DefaultDrawer({Key? key}) : super(key: key);

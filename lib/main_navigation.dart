@@ -1,7 +1,7 @@
 import 'package:flutter/widgets.dart';
-import 'package:layouts_1/pages/home_page.dart';
-import 'package:layouts_1/pages/page_one.dart';
-import 'package:layouts_1/pages/page_two.dart';
+import 'package:translate_1/pages/home_page.dart';
+import 'package:translate_1/pages/page_one.dart';
+import 'package:translate_1/pages/page_two.dart';
 
 abstract class MainNavigationRouteNames {
   static const home = '/';

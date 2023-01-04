@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:layouts_1/main_navigation.dart';
-import 'package:layouts_1/pages/home_page.dart';
+import 'package:translate_1/main_navigation.dart';
 
 void main() {
   runApp(MyApp());

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:layouts_1/layouts/drawers/default_drawer.dart';
+import 'package:translate_1/layouts/drawers/default_drawer.dart';
 
 class DefaultLayout extends StatelessWidget {
   final Widget child;

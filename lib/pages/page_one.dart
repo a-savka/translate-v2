@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:layouts_1/layouts/default_layout.dart';
+import 'package:translate_1/layouts/default_layout.dart';
 
 class PageOne extends StatelessWidget {
   const PageOne({Key? key}) : super(key: key);
