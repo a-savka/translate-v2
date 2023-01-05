@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:translate_1/domain/models/translation.model.dart';
+import 'package:translate_1/domain/providers/translations.provider.dart';
 import 'package:translate_1/domain/services/filesystem.service.dart';
 import 'package:translate_1/layouts/default_layout.dart';
 import 'package:translate_1/main_di.dart';
+import 'package:translate_1/ui/translations/translations.view_model.dart';
+import 'package:translate_1/ui/translations/translations.widget.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -11,34 +15,12 @@ class HomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return DefaultLayout(
       title: 'Home Page',
-      child: Center(
-        child: MaterialButton(
-          onPressed: () {
-            _pickFile();
-          },
-          color: Colors.green,
-          child: const Text(
-            'Select file',
-            style: TextStyle(color: Colors.white),
-          ),
+      child: ChangeNotifierProvider<TranslationsViewModel>(
+        create: (_) => TranslationsViewModel(
+          translationsProvider: getIt.get<TranslationsProvider>(),
         ),
+        child: const TranslationsWidget(),
       ),
     );
-  }
-
-  void _pickFile() async {
-    final filesystem = getIt.get<FilesystemService>();
-    final path = await filesystem.pickFilePath();
-    if (path != null) {
-      final json = await filesystem.readJsonFile(path);
-      if (json != null) {
-        final translations = Translations.fromJson(json);
-        print('Count: ${translations.data.length}');
-      } else {
-        print('Empty data');
-      }
-    } else {
-      print('No file selected');
-    }
   }
 }

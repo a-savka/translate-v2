@@ -18,17 +18,7 @@ class DefaultLayout extends StatelessWidget {
         title: const Text('Home Page'),
       ),
       drawer: const DefaultDrawer(),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          mainAxisSize: MainAxisSize.max,
-          children: [
-            Container(
-              child: child,
-            ),
-          ],
-        ),
-      ),
+      body: child,
     );
   }
 }
