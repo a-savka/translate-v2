@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:translate_1/domain/models/translation.model.dart';
 import 'package:translate_1/ui/translations/translations.view_model.dart';
+import 'package:translate_1/ui/translations/widgets/translations_list.dart';
 
 class TranslationsWidget extends StatelessWidget {
   const TranslationsWidget({Key? key}) : super(key: key);
@@ -42,28 +43,8 @@ class TranslationsWidget extends StatelessWidget {
           );
         }
 
-        const Color tileColor = Color(0xFF3399FF);
-
-        return ListView.builder(
-          itemCount: translations.length,
-          itemBuilder: (BuildContext context, int index) {
-            return Container(
-              height: 50,
-              margin: const EdgeInsets.fromLTRB(5, 0, 5, 0),
-              decoration: BoxDecoration(
-                border: Border(
-                  top: BorderSide(width: 1, color: tileColor.withAlpha(0x30)),
-                ),
-                color: tileColor.withAlpha(0x10),
-              ),
-              child: Center(
-                child: Text(
-                  translations[index].text,
-                  style: TextStyle(color: tileColor.withAlpha(0xB0)),
-                ),
-              ),
-            );
-          },
+        return TranslationsList(
+          translations: translations,
         );
       },
     );
