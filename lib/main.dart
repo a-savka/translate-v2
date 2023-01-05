@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:translate_1/main_navigation.dart';
 
+import 'package:translate_1/main_di.dart';
+
 void main() {
+  setupDI();
   runApp(MyApp());
 }
 

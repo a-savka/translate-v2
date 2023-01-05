@@ -1,10 +1,8 @@
-import 'dart:convert';
-import 'dart:io';
-
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:translate_1/domain/models/translation.model.dart';
+import 'package:translate_1/domain/services/filesystem.service.dart';
 import 'package:translate_1/layouts/default_layout.dart';
+import 'package:translate_1/main_di.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -29,16 +27,18 @@ class HomePage extends StatelessWidget {
   }
 
   void _pickFile() async {
-    final result = await FilePicker.platform.pickFiles(allowMultiple: false);
-    if (result == null || result.count < 1) {
-      return;
+    final filesystem = getIt.get<FilesystemService>();
+    final path = await filesystem.pickFilePath();
+    if (path != null) {
+      final json = await filesystem.readJsonFile(path);
+      if (json != null) {
+        final translations = Translations.fromJson(json);
+        print('Count: ${translations.data.length}');
+      } else {
+        print('Empty data');
+      }
+    } else {
+      print('No file selected');
     }
-    final file = File(result.paths.first!);
-    final contents = await file.readAsString();
-    final json = jsonDecode(contents);
-    final translations = Translations.fromJson(
-      {'data': json},
-    );
-    print('Count: ${translations.data.length}');
   }
 }
