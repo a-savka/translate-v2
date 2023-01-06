@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:translate_1/domain/models/translation.model.dart';
 import 'package:translate_1/ui/translations/widgets/rounded_button.dart';
+import 'package:translate_1/ui/translations/widgets/translation_input_field.dart';
 import 'package:translate_1/ui/translations/widgets/translation_list_tile.dart';
 import 'package:translate_1/ui/translations/widgets/transltaion_list_item.model.dart';
 
@@ -52,19 +53,16 @@ class TranslationsListState extends State<TranslationsList> {
           alignment: Alignment.bottomCenter,
           child: Padding(
             padding: const EdgeInsets.fromLTRB(25, 0, 25, 10),
-            child: RoundedButton(
-              title: 'Hello there',
-              onPressed: () {
-                _addFakeItem();
-              },
-            ),
+            child: TranslationInput(onTranslate: (String text) {
+              _addFakeItem(text);
+            }),
           ),
         ),
       ],
     );
   }
 
-  void _addFakeItem() {
+  void _addFakeItem(String text) {
     final TranslationListItem newItem = TranslationListItem(
       isLoading: true,
       data: null,
@@ -82,7 +80,7 @@ class TranslationsListState extends State<TranslationsList> {
         newItem.data = Translation(
           id: 'FAKEONE',
           category: 'test',
-          text: 'Fake item',
+          text: text,
           translate: ['fake'],
           correctAnswers: 0,
           shownTimes: 0,
