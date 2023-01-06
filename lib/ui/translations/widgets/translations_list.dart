@@ -66,7 +66,7 @@ class TranslationsListState extends State<TranslationsList> {
 
   void _addFakeItem() {
     final TranslationListItem newItem = TranslationListItem(
-      isLoading: false,
+      isLoading: true,
       data: Translation(
         id: 'FAKEONE',
         category: 'test',
@@ -84,6 +84,13 @@ class TranslationsListState extends State<TranslationsList> {
       0,
       duration: const Duration(milliseconds: 2000),
     );
-    translations = [newItem, ...translations];
+    setState(() {
+      translations = [newItem, ...translations];
+    });
+    Future.delayed(const Duration(milliseconds: 1500)).then((_) {
+      setState(() {
+        newItem.isLoading = false;
+      });
+    });
   }
 }
