@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:translate_1/domain/models/translation.model.dart';
 import 'package:translate_1/ui/translations/widgets/rounded_button.dart';
+import 'package:translate_1/ui/translations/widgets/translation_list_tile.dart';
+import 'package:translate_1/ui/translations/widgets/transltaion_list_item.model.dart';
 
 class TranslationsList extends StatefulWidget {
   final List<Translation> translations;
@@ -16,40 +18,33 @@ class TranslationsList extends StatefulWidget {
 }
 
 class TranslationsListState extends State<TranslationsList> {
-  late List<Translation> translations;
+  late List<TranslationListItem> translations;
+  final GlobalKey<AnimatedListState> listKey = GlobalKey<AnimatedListState>();
 
   @override
   void initState() {
     super.initState();
-    translations = List.from(widget.translations);
+    translations = widget.translations
+        .map(
+          (it) => TranslationListItem(
+            isLoading: false,
+            data: it,
+          ),
+        )
+        .toList();
   }
 
   @override
   Widget build(BuildContext context) {
-    const Color tileColor = Color(0xFF3399FF);
-
     return Stack(
       children: [
         AnimatedList(
+          key: listKey,
           initialItemCount: translations.length,
           itemBuilder: (BuildContext context, int index, Animation animation) {
-            return Container(
-              height: 50,
-              margin: const EdgeInsets.fromLTRB(5, 0, 5, 0),
-              padding: const EdgeInsets.symmetric(horizontal: 10),
-              decoration: BoxDecoration(
-                border: Border(
-                  top: BorderSide(width: 1, color: tileColor.withAlpha(0x30)),
-                ),
-                color: tileColor.withAlpha(0x10),
-              ),
-              child: Align(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  translations[index].text,
-                  style: TextStyle(color: tileColor.withAlpha(0xB0)),
-                ),
-              ),
+            return TranslationListTile(
+              item: translations[index],
+              animation: animation as Animation<double>,
             );
           },
         ),
@@ -59,11 +54,36 @@ class TranslationsListState extends State<TranslationsList> {
             padding: const EdgeInsets.fromLTRB(25, 0, 25, 10),
             child: RoundedButton(
               title: 'Hello there',
-              onPressed: () {},
+              onPressed: () {
+                _addFakeItem();
+              },
             ),
           ),
         ),
       ],
     );
+  }
+
+  void _addFakeItem() {
+    final TranslationListItem newItem = TranslationListItem(
+      isLoading: false,
+      data: Translation(
+        id: 'FAKEONE',
+        category: 'test',
+        text: 'Fake item',
+        translate: ['fake'],
+        correctAnswers: 0,
+        shownTimes: 0,
+        translateRequestsCount: 0,
+        description: '',
+        dateAdded: DateTime.now().toIso8601String(),
+        dateOfLastTranslate: DateTime.now().toIso8601String(),
+      ),
+    );
+    listKey.currentState!.insertItem(
+      0,
+      duration: const Duration(milliseconds: 2000),
+    );
+    translations = [newItem, ...translations];
   }
 }
