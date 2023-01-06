@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:translate_1/domain/models/translation.model.dart';
+import 'package:translate_1/ui/translations/widgets/rounded_button.dart';
 
 class TranslationsList extends StatefulWidget {
   final List<Translation> translations;
@@ -57,35 +57,9 @@ class TranslationsListState extends State<TranslationsList> {
           alignment: Alignment.bottomCenter,
           child: Padding(
             padding: const EdgeInsets.fromLTRB(25, 0, 25, 10),
-            child: Container(
-              height: 50,
-              width: double.infinity,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(30),
-                color: Colors.white,
-                border: Border.all(color: const Color(0xFFDBDBDB)),
-              ),
-              child: ElevatedButton(
-                onPressed: () {},
-                style: ButtonStyle(
-                  backgroundColor: MaterialStateProperty.all<Color>(
-                    Colors.green,
-                  ),
-                  shape: MaterialStateProperty.all<OutlinedBorder>(
-                    const RoundedRectangleBorder(
-                      borderRadius: BorderRadius.all(
-                        Radius.circular(50),
-                      ),
-                    ),
-                  ),
-                ),
-                child: const Text(
-                  'Hello',
-                  style: TextStyle(
-                    color: Colors.white,
-                  ),
-                ),
-              ),
+            child: RoundedButton(
+              title: 'Hello there',
+              onPressed: () {},
             ),
           ),
         ),
