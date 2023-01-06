@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:translate_1/ui/translations/widgets/transltaion_list_item.model.dart';
 
 class TranslationListTile extends StatelessWidget {
@@ -14,33 +13,40 @@ class TranslationListTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     const Color tileColor = Color(0xFF3399FF);
-    return ScaleTransition(
-      scale: CurvedAnimation(
+    return SizeTransition(
+      axis: Axis.vertical,
+      sizeFactor: CurvedAnimation(
         curve: Curves.fastOutSlowIn,
         parent: animation,
       ),
-      child: Container(
-        height: 50,
-        margin: const EdgeInsets.fromLTRB(5, 0, 5, 0),
-        padding: const EdgeInsets.symmetric(horizontal: 10),
-        decoration: BoxDecoration(
-          border: Border(
-            top: BorderSide(width: 1, color: tileColor.withAlpha(0x30)),
-          ),
-          color: tileColor.withAlpha(0x10),
+      child: ScaleTransition(
+        scale: CurvedAnimation(
+          curve: Curves.fastOutSlowIn,
+          parent: animation,
         ),
-        child: item.isLoading
-            ? const Align(
-                alignment: Alignment.center,
-                child: CircularProgressIndicator(),
-              )
-            : Align(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  item.data?.text ?? 'No data',
-                  style: TextStyle(color: tileColor.withAlpha(0xB0)),
+        child: Container(
+          height: 50,
+          margin: const EdgeInsets.fromLTRB(5, 0, 5, 0),
+          padding: const EdgeInsets.symmetric(horizontal: 10),
+          decoration: BoxDecoration(
+            border: Border(
+              top: BorderSide(width: 1, color: tileColor.withAlpha(0x30)),
+            ),
+            color: tileColor.withAlpha(0x10),
+          ),
+          child: item.isLoading
+              ? const Align(
+                  alignment: Alignment.center,
+                  child: CircularProgressIndicator(),
+                )
+              : Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    item.data?.text ?? 'No data',
+                    style: TextStyle(color: tileColor.withAlpha(0xB0)),
+                  ),
                 ),
-              ),
+        ),
       ),
     );
   }

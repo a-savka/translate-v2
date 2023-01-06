@@ -67,22 +67,11 @@ class TranslationsListState extends State<TranslationsList> {
   void _addFakeItem() {
     final TranslationListItem newItem = TranslationListItem(
       isLoading: true,
-      data: Translation(
-        id: 'FAKEONE',
-        category: 'test',
-        text: 'Fake item',
-        translate: ['fake'],
-        correctAnswers: 0,
-        shownTimes: 0,
-        translateRequestsCount: 0,
-        description: '',
-        dateAdded: DateTime.now().toIso8601String(),
-        dateOfLastTranslate: DateTime.now().toIso8601String(),
-      ),
+      data: null,
     );
     listKey.currentState!.insertItem(
       0,
-      duration: const Duration(milliseconds: 2000),
+      duration: const Duration(milliseconds: 1000),
     );
     setState(() {
       translations = [newItem, ...translations];
@@ -90,6 +79,18 @@ class TranslationsListState extends State<TranslationsList> {
     Future.delayed(const Duration(milliseconds: 1500)).then((_) {
       setState(() {
         newItem.isLoading = false;
+        newItem.data = Translation(
+          id: 'FAKEONE',
+          category: 'test',
+          text: 'Fake item',
+          translate: ['fake'],
+          correctAnswers: 0,
+          shownTimes: 0,
+          translateRequestsCount: 0,
+          description: '',
+          dateAdded: DateTime.now().toIso8601String(),
+          dateOfLastTranslate: DateTime.now().toIso8601String(),
+        );
       });
     });
   }
