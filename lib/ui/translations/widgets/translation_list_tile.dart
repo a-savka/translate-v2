@@ -25,28 +25,41 @@ class TranslationListTile extends StatelessWidget {
           parent: animation,
         ),
         child: Container(
-          height: 50,
-          margin: const EdgeInsets.fromLTRB(5, 0, 5, 0),
-          padding: const EdgeInsets.symmetric(horizontal: 10),
-          decoration: BoxDecoration(
-            border: Border(
-              top: BorderSide(width: 1, color: tileColor.withAlpha(0x30)),
+            height: 50,
+            margin: const EdgeInsets.fromLTRB(5, 0, 5, 0),
+            padding: const EdgeInsets.symmetric(horizontal: 10),
+            decoration: BoxDecoration(
+              border: Border(
+                top: BorderSide(width: 1, color: tileColor.withAlpha(0x30)),
+              ),
+              color: tileColor.withAlpha(0x10),
             ),
-            color: tileColor.withAlpha(0x10),
-          ),
-          child: item.isLoading
-              ? const Align(
-                  alignment: Alignment.center,
-                  child: CircularProgressIndicator(),
-                )
-              : Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    item.data?.text ?? 'No data',
-                    style: TextStyle(color: tileColor.withAlpha(0xB0)),
-                  ),
-                ),
-        ),
+            child: item.isLoading
+                ? const Align(
+                    alignment: Alignment.center,
+                    child: CircularProgressIndicator(),
+                  )
+                : Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Flexible(
+                        flex: 2,
+                        fit: FlexFit.tight,
+                        child: Text(
+                          item.data?.text ?? 'No data',
+                          style: TextStyle(color: tileColor.withAlpha(0xB0)),
+                        ),
+                      ),
+                      Flexible(
+                        flex: 3,
+                        fit: FlexFit.tight,
+                        child: Text(
+                          item.data?.translate[0] ?? '',
+                          style: TextStyle(color: tileColor.withAlpha(0xB0)),
+                        ),
+                      ),
+                    ],
+                  )),
       ),
     );
   }
