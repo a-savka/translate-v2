@@ -60,7 +60,19 @@ class TranslationsListState extends State<TranslationsList> {
             child: TranslationInput(
               disabled: isInProgress,
               onTranslate: (String text) {
-                _addFakeItem(text);
+                if (_isTranslated(text)) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Already translated'),
+                      backgroundColor: Color(0x600000FF),
+                      duration: Duration(milliseconds: 1500),
+                      behavior: SnackBarBehavior.floating,
+                      margin: EdgeInsets.all(10),
+                    ),
+                  );
+                } else {
+                  _translate(text);
+                }
               },
             ),
           ),
@@ -69,7 +81,12 @@ class TranslationsListState extends State<TranslationsList> {
     );
   }
 
-  void _addFakeItem(String text) async {
+  bool _isTranslated(String text) {
+    return translations
+        .any((item) => item.data?.text.toUpperCase() == text.toUpperCase());
+  }
+
+  void _translate(String text) async {
     final TranslationListItem newItem = TranslationListItem(
       isLoading: true,
       data: null,
