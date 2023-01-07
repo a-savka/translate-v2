@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 
 class TranslationInput extends StatefulWidget {
   final void Function(String text) onTranslate;
+  final bool disabled;
   const TranslationInput({
     Key? key,
     required this.onTranslate,
+    this.disabled = false,
   }) : super(key: key);
 
   @override
@@ -36,13 +38,14 @@ class TranslationInputState extends State<TranslationInput> {
         onChanged: (value) {
           setState(() {});
         },
+        enabled: !widget.disabled,
         decoration: InputDecoration(
           border: InputBorder.none,
-          hintText: 'Enter word',
+          hintText: widget.disabled ? 'Please wait' : 'Enter word',
           hintStyle: const TextStyle(color: Color(0xFFCCCCCC)),
           suffixIcon: Padding(
             padding: const EdgeInsets.all(8),
-            child: _controller.text.isEmpty
+            child: _controller.text.isEmpty || widget.disabled
                 ? const SizedBox.shrink()
                 : GestureDetector(
                     onTap: () {

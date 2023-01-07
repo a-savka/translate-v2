@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:translate_1/domain/models/translation.model.dart';
-import 'package:translate_1/ui/translations/widgets/rounded_button.dart';
+import 'package:translate_1/domain/services/libre_translate.service.dart';
+import 'package:translate_1/domain/services/yandex_translate.service.dart';
+import 'package:translate_1/main_di.dart';
 import 'package:translate_1/ui/translations/widgets/translation_input_field.dart';
 import 'package:translate_1/ui/translations/widgets/translation_list_tile.dart';
 import 'package:translate_1/ui/translations/widgets/transltaion_list_item.model.dart';
@@ -21,10 +23,12 @@ class TranslationsList extends StatefulWidget {
 class TranslationsListState extends State<TranslationsList> {
   late List<TranslationListItem> translations;
   final GlobalKey<AnimatedListState> listKey = GlobalKey<AnimatedListState>();
+  bool isInProgress = false;
 
   @override
   void initState() {
     super.initState();
+    isInProgress = false;
     translations = widget.translations
         .map(
           (it) => TranslationListItem(
@@ -53,16 +57,19 @@ class TranslationsListState extends State<TranslationsList> {
           alignment: Alignment.bottomCenter,
           child: Padding(
             padding: const EdgeInsets.fromLTRB(25, 0, 25, 10),
-            child: TranslationInput(onTranslate: (String text) {
-              _addFakeItem(text);
-            }),
+            child: TranslationInput(
+              disabled: isInProgress,
+              onTranslate: (String text) {
+                _addFakeItem(text);
+              },
+            ),
           ),
         ),
       ],
     );
   }
 
-  void _addFakeItem(String text) {
+  void _addFakeItem(String text) async {
     final TranslationListItem newItem = TranslationListItem(
       isLoading: true,
       data: null,
@@ -74,22 +81,47 @@ class TranslationsListState extends State<TranslationsList> {
     setState(() {
       translations = [newItem, ...translations];
     });
-    Future.delayed(const Duration(milliseconds: 1500)).then((_) {
+
+    LibreTranslateService translator = getIt.get<LibreTranslateService>();
+
+    setState(() {
+      isInProgress = true;
+    });
+    List<String> result;
+    try {
+      result = await translator.translate(text);
+    } catch (_) {
+      listKey.currentState!.removeItem(
+        0,
+        (context, animation) => TranslationListTile(
+          item: newItem,
+          animation: animation,
+        ),
+      );
       setState(() {
-        newItem.isLoading = false;
-        newItem.data = Translation(
-          id: 'FAKEONE',
-          category: 'test',
-          text: text,
-          translate: ['fake'],
-          correctAnswers: 0,
-          shownTimes: 0,
-          translateRequestsCount: 0,
-          description: '',
-          dateAdded: DateTime.now().toIso8601String(),
-          dateOfLastTranslate: DateTime.now().toIso8601String(),
-        );
+        translations.removeAt(0);
       });
+      return;
+    } finally {
+      setState(() {
+        isInProgress = false;
+      });
+    }
+
+    setState(() {
+      newItem.isLoading = false;
+      newItem.data = Translation(
+        id: 'newniceid',
+        category: 'test',
+        text: text,
+        translate: result,
+        correctAnswers: 0,
+        shownTimes: 0,
+        translateRequestsCount: 0,
+        description: '',
+        dateAdded: DateTime.now().toIso8601String(),
+        dateOfLastTranslate: DateTime.now().toIso8601String(),
+      );
     });
   }
 }
