@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:translate_1/domain/models/translation.model.dart';
 import 'package:translate_1/domain/services/libre_translate.service.dart';
-import 'package:translate_1/domain/services/yandex_translate.service.dart';
 import 'package:translate_1/main_di.dart';
 import 'package:translate_1/ui/translations/widgets/translation_input_field.dart';
 import 'package:translate_1/ui/translations/widgets/translation_list_tile.dart';
@@ -60,7 +59,8 @@ class TranslationsListState extends State<TranslationsList> {
             child: TranslationInput(
               disabled: isInProgress,
               onTranslate: (String text) {
-                if (_isTranslated(text)) {
+                final translated = _getTranslated(text);
+                if (translated != null) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
                       content: Text('Already translated'),
@@ -70,6 +70,7 @@ class TranslationsListState extends State<TranslationsList> {
                       margin: EdgeInsets.all(10),
                     ),
                   );
+                  _updateTranslated(translated);
                 } else {
                   _translate(text);
                 }
@@ -81,9 +82,14 @@ class TranslationsListState extends State<TranslationsList> {
     );
   }
 
-  bool _isTranslated(String text) {
-    return translations
-        .any((item) => item.data?.text.toUpperCase() == text.toUpperCase());
+  TranslationListItem? _getTranslated(String text) {
+    int index = translations.indexWhere(
+      (item) => item.data?.text.toUpperCase() == text.toUpperCase(),
+    );
+    if (index >= 0) {
+      return translations[index];
+    }
+    return null;
   }
 
   void _translate(String text) async {
@@ -134,11 +140,40 @@ class TranslationsListState extends State<TranslationsList> {
         translate: result,
         correctAnswers: 0,
         shownTimes: 0,
-        translateRequestsCount: 0,
+        translateRequestsCount: 1,
         description: '',
-        dateAdded: DateTime.now().toIso8601String(),
-        dateOfLastTranslate: DateTime.now().toIso8601String(),
+        dateAdded: DateTime.now().toUtc().toIso8601String(),
+        dateOfLastTranslate: DateTime.now().toUtc().toIso8601String(),
       );
     });
+  }
+
+  void _updateTranslated(TranslationListItem item) {
+    if (item.data != null) {
+      int index = translations.indexOf(item);
+
+      listKey.currentState!.removeItem(
+        index,
+        (context, animation) => TranslationListTile(
+          item: item,
+          animation: animation,
+        ),
+      );
+
+      item.data = item.data!.copyWith(
+        dateOfLastTranslate: DateTime.now().toUtc().toIso8601String(),
+        translateRequestsCount: item.data!.translateRequestsCount + 1,
+      );
+
+      listKey.currentState!.insertItem(
+        0,
+        duration: const Duration(milliseconds: 1000),
+      );
+
+      setState(() {
+        translations.removeAt(index);
+        translations = [item, ...translations];
+      });
+    }
   }
 }

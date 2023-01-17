@@ -53,6 +53,32 @@ class Translation {
       'correctAnswers': correctAnswers,
     };
   }
+
+  Translation copyWith({
+    String? id,
+    String? text,
+    List<String>? translate,
+    String? description,
+    String? dateAdded,
+    String? dateOfLastTranslate,
+    int? translateRequestsCount,
+    String? category,
+    int? shownTimes,
+    int? correctAnswers,
+  }) {
+    return Translation(
+      id: id ?? this.id,
+      text: text ?? this.text,
+      translate: translate ?? this.translate,
+      dateAdded: dateAdded ?? this.dateAdded,
+      dateOfLastTranslate: dateOfLastTranslate ?? this.dateOfLastTranslate,
+      translateRequestsCount:
+          translateRequestsCount ?? this.translateRequestsCount,
+      category: category ?? this.category,
+      shownTimes: shownTimes ?? this.shownTimes,
+      correctAnswers: correctAnswers ?? this.correctAnswers,
+    );
+  }
 }
 
 class Translations {
