@@ -23,4 +23,12 @@ class TranslationsViewModel extends ChangeNotifier {
     isLoading = false;
     notifyListeners();
   }
+
+  void addTranslation(Translation translation) {
+    translationsProvider.addTranslation(translation);
+  }
+
+  void updateTranslation(Translation translation) {
+    translationsProvider.updateTranslation(translation);
+  }
 }

@@ -8,8 +8,12 @@ import 'package:translate_1/ui/translations/widgets/transltaion_list_item.model.
 
 class TranslationsList extends StatefulWidget {
   final List<Translation> translations;
+  final void Function(Translation translation) onAdd;
+  final void Function(Translation translation) onUpdate;
   const TranslationsList({
     required this.translations,
+    required this.onAdd,
+    required this.onUpdate,
     Key? key,
   }) : super(key: key);
 
@@ -131,21 +135,25 @@ class TranslationsListState extends State<TranslationsList> {
       });
     }
 
+    Translation translation = Translation(
+      id: 'newniceid',
+      category: 'test',
+      text: text,
+      translate: result,
+      correctAnswers: 0,
+      shownTimes: 0,
+      translateRequestsCount: 1,
+      description: '',
+      dateAdded: DateTime.now().toUtc().toIso8601String(),
+      dateOfLastTranslate: DateTime.now().toUtc().toIso8601String(),
+    );
+
     setState(() {
       newItem.isLoading = false;
-      newItem.data = Translation(
-        id: 'newniceid',
-        category: 'test',
-        text: text,
-        translate: result,
-        correctAnswers: 0,
-        shownTimes: 0,
-        translateRequestsCount: 1,
-        description: '',
-        dateAdded: DateTime.now().toUtc().toIso8601String(),
-        dateOfLastTranslate: DateTime.now().toUtc().toIso8601String(),
-      );
+      newItem.data = translation;
     });
+
+    widget.onAdd(translation);
   }
 
   void _updateTranslated(TranslationListItem item) {
@@ -174,6 +182,8 @@ class TranslationsListState extends State<TranslationsList> {
         translations.removeAt(index);
         translations = [item, ...translations];
       });
+
+      widget.onUpdate(item.data!);
     }
   }
 }

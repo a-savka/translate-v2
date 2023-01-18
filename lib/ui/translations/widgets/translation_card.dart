@@ -24,10 +24,10 @@ class TranslationCard extends StatelessWidget {
             child: _cardHeader(context),
           ),
         ),
-        const SizedBox(
+        SizedBox(
           height: 100,
           child: Center(
-            child: Text('This is sample content'),
+            child: Text(translation.dateOfLastTranslate),
           ),
         ),
       ],

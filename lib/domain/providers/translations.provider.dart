@@ -4,7 +4,7 @@ import 'package:translate_1/domain/services/filesystem.service.dart';
 class TranslationsProvider {
   final FilesystemService filesystem;
 
-  List<Translation>? translations;
+  List<Translation>? _translations;
   bool _isLoaded = false;
   bool _isLoading = false;
 
@@ -24,9 +24,10 @@ class TranslationsProvider {
       if (path != null) {
         final json = await filesystem.readJsonFile(path);
         if (json != null) {
-          translations = Translations.fromJson(json).data;
+          _translations = Translations.fromJson(json).data;
           _isLoaded = true;
           _isLoading = false;
+          _reorder();
         }
       }
     } catch (_) {
@@ -39,9 +40,38 @@ class TranslationsProvider {
     if (!_isLoaded) {
       await _loadTranslations();
     }
-    return translations ?? [];
+    return _translations ?? [];
   }
 
   bool get isLoaded => _isLoaded;
   bool get isLoading => _isLoading;
+
+  void addTranslation(Translation translation) {
+    if (_translations != null) {
+      _translations!.add(translation);
+    }
+    _reorder();
+  }
+
+  void updateTranslation(Translation translation) {
+    if (_translations == null) {
+      return;
+    }
+    int index = _translations!.indexWhere(
+        (t) => t.text.toLowerCase() == translation.text.toLowerCase());
+    if (index >= 0) {
+      _translations![index] = translation;
+      _reorder();
+    }
+  }
+
+  void _reorder() {
+    if (_translations == null) {
+      return;
+    }
+    _translations!.sort((a, b) {
+      return DateTime.parse(b.dateOfLastTranslate)
+          .compareTo(DateTime.parse(a.dateOfLastTranslate));
+    });
+  }
 }

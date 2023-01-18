@@ -45,6 +45,12 @@ class TranslationsWidget extends StatelessWidget {
 
         return TranslationsList(
           translations: translations,
+          onAdd: (translation) {
+            viewModel.addTranslation(translation);
+          },
+          onUpdate: (translation) {
+            viewModel.updateTranslation(translation);
+          },
         );
       },
     );
