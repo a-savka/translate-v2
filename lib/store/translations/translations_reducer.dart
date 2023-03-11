@@ -10,6 +10,8 @@ final translationsReducer = combineReducers([
   TypedReducer<TranslationsState, LoadTranslationsSuccessAction>(
       _onLoadSuccess),
   TypedReducer<TranslationsState, LoadTranslationsFailAction>(_onLoadFail),
+  TypedReducer<TranslationsState, DeleteTranslationAction>(
+      _onDeleteTranslation),
 ]);
 
 TranslationsState _onSetTranslations(
@@ -58,6 +60,7 @@ TranslationsState _onDeleteTranslation(
   TranslationsState state,
   DeleteTranslationAction action,
 ) {
+  print('delete reducer for: ${action.text}');
   return state.copyWith(
     translations: state.translations
         ?.where((element) => element.text != action.text)

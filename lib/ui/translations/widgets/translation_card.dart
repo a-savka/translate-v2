@@ -1,20 +1,29 @@
 import 'package:flutter/material.dart';
 import 'package:translate_1/domain/models/translation.model.dart';
 import 'package:translate_1/ui/translations/widgets/colors.dart';
+import 'package:intl/intl.dart';
+import 'package:translate_1/ui/translations/widgets/edit_translation.dart';
+import 'package:translate_1/ui/translations/widgets/generic_confirmation.dart';
 
 class TranslationCard extends StatelessWidget {
   final Translation translation;
   final void Function() onTap;
+  final void Function() onDelete;
+  final void Function(Translation translation) onEdit;
   final bool isOpen;
   const TranslationCard({
     required this.translation,
     required this.onTap,
     required this.isOpen,
+    required this.onDelete,
+    required this.onEdit,
     Key? key,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    final DateFormat dateFormat = DateFormat('dd.MM.yyyy HH:mm');
+
     return Column(
       children: [
         GestureDetector(
@@ -25,11 +34,110 @@ class TranslationCard extends StatelessWidget {
           ),
         ),
         SizedBox(
-          height: 100,
-          child: Center(
-            child: Text(translation.dateOfLastTranslate),
+          height: 110,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              const SizedBox(
+                height: 14,
+              ),
+              _cardDataRow(
+                context,
+                'Total tests: ',
+                translation.shownTimes.toString(),
+              ),
+              _cardDataRow(
+                context,
+                'Correct answers: ',
+                translation.correctAnswers.toString(),
+              ),
+              const Expanded(
+                child: SizedBox(),
+              ),
+              SizedBox(
+                height: 30,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Text(
+                      dateFormat.format(
+                          DateTime.parse(translation.dateOfLastTranslate)),
+                      style: const TextStyle(color: Colors.blue, fontSize: 10),
+                    ),
+                    const Expanded(child: SizedBox()),
+                    IconButton(
+                      onPressed: () {
+                        showModalBottomSheet(
+                          shape: const RoundedRectangleBorder(
+                              borderRadius: BorderRadius.only(
+                                  topLeft: Radius.circular(16),
+                                  topRight: Radius.circular(16))),
+                          isDismissible: false,
+                          isScrollControlled: true,
+                          context: context,
+                          builder: (BuildContext context) {
+                            return Wrap(
+                              children: [
+                                EditTranslation(
+                                    title: 'Edit translation',
+                                    translation: translation,
+                                    onEdit: (Translation edited) {
+                                      Navigator.pop(context);
+                                      onEdit(edited);
+                                    },
+                                    onCancel: () {
+                                      Navigator.pop(context);
+                                    }),
+                              ],
+                            );
+                          },
+                        );
+                      },
+                      icon: const Icon(Icons.edit),
+                      color: Colors.blue.shade800,
+                      iconSize: 20,
+                      constraints: const BoxConstraints(),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 10, vertical: 5),
+                    ),
+                    IconButton(
+                      onPressed: () {
+                        showModalBottomSheet(
+                          context: context,
+                          shape: const RoundedRectangleBorder(
+                              borderRadius: BorderRadius.only(
+                                  topLeft: Radius.circular(16),
+                                  topRight: Radius.circular(16))),
+                          isDismissible: false,
+                          builder: (BuildContext context) {
+                            return GenericConfirmation(
+                              title: 'Please Confirm',
+                              message: 'Delete this record?',
+                              onConfirm: () {
+                                Navigator.pop(context);
+                                onDelete();
+                              },
+                              onReject: () {
+                                Navigator.pop(context);
+                              },
+                            );
+                          },
+                        );
+                      },
+                      icon: const Icon(Icons.delete),
+                      color: Colors.blue.shade800,
+                      iconSize: 20,
+                      constraints: const BoxConstraints(),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 10, vertical: 5),
+                    ),
+                  ],
+                ),
+              )
+            ],
           ),
-        ),
+        )
       ],
     );
   }
@@ -54,6 +162,36 @@ class TranslationCard extends StatelessWidget {
             style: TextStyle(color: AppColors.tileColor.withAlpha(0xB0)),
           ),
         ),
+      ],
+    );
+  }
+
+  Widget _cardDataRow(
+    BuildContext context,
+    String caption,
+    String data,
+  ) {
+    final textStyle = TextStyle(color: AppColors.tileColor.withAlpha(0xB0));
+
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Flexible(
+          flex: 2,
+          fit: FlexFit.tight,
+          child: Text(
+            caption,
+            style: textStyle,
+          ),
+        ),
+        Flexible(
+          flex: 3,
+          fit: FlexFit.tight,
+          child: Text(
+            data,
+            style: textStyle,
+          ),
+        )
       ],
     );
   }

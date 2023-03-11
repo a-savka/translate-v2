@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:translate_1/domain/models/translation.model.dart';
 import 'package:translate_1/ui/translations/widgets/colors.dart';
 import 'package:translate_1/ui/translations/widgets/translation_card.dart';
 import 'package:translate_1/ui/translations/widgets/transltaion_list_item.model.dart';
@@ -6,10 +7,14 @@ import 'package:translate_1/ui/translations/widgets/transltaion_list_item.model.
 class TranslationListTile extends StatefulWidget {
   final TranslationListItem item;
   final Animation<double> animation;
+  final void Function() onDelete;
+  final void Function(Translation translation) onEdit;
   const TranslationListTile({
     Key? key,
     required this.item,
     required this.animation,
+    required this.onDelete,
+    required this.onEdit,
   }) : super(key: key);
 
   @override
@@ -67,6 +72,8 @@ class TranslationListTileState extends State<TranslationListTile>
                             _isOpen = !_isOpen;
                           });
                         },
+                        onDelete: widget.onDelete,
+                        onEdit: widget.onEdit,
                         isOpen: _isOpen,
                       )),
         ),

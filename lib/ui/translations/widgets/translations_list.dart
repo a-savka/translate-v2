@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:translate_1/domain/models/errors/http_error.model.dart';
 import 'package:translate_1/domain/models/translation.model.dart';
 import 'package:translate_1/domain/services/google_translate.service.dart';
 import 'package:translate_1/main_di.dart';
+import 'package:translate_1/ui/translations/widgets/edit_translation.dart';
+import 'package:translate_1/ui/translations/widgets/generic_confirmation.dart';
 import 'package:translate_1/ui/translations/widgets/translation_input_field.dart';
 import 'package:translate_1/ui/translations/widgets/translation_list_tile.dart';
 import 'package:translate_1/ui/translations/widgets/transltaion_list_item.model.dart';
@@ -11,10 +12,12 @@ class TranslationsList extends StatefulWidget {
   final List<Translation> translations;
   final void Function(Translation translation) onAdd;
   final void Function(Translation translation) onUpdate;
+  final void Function(Translation translation) onDelete;
   const TranslationsList({
     required this.translations,
     required this.onAdd,
     required this.onUpdate,
+    required this.onDelete,
     Key? key,
   }) : super(key: key);
 
@@ -52,8 +55,21 @@ class TranslationsListState extends State<TranslationsList> {
           initialItemCount: translations.length,
           itemBuilder: (BuildContext context, int index, Animation animation) {
             return TranslationListTile(
+              key: Key(translations[index].data?.text ?? 'inprogress'),
               item: translations[index],
               animation: animation as Animation<double>,
+              onDelete: () {
+                if (translations[index].data != null) {
+                  widget.onDelete(translations[index].data!);
+                }
+                _removeItem(translations[index]);
+              },
+              onEdit: (Translation translation) {
+                setState(() {
+                  translations[index].data = translation;
+                });
+                widget.onUpdate(translation);
+              },
             );
           },
         ),
@@ -77,7 +93,7 @@ class TranslationsListState extends State<TranslationsList> {
                   );
                   _updateTranslated(translated);
                 } else {
-                  _translate(text);
+                  _translate(text, context);
                 }
               },
             ),
@@ -97,7 +113,7 @@ class TranslationsListState extends State<TranslationsList> {
     return null;
   }
 
-  void _translate(String text) async {
+  void _translate(String text, BuildContext context) async {
     final TranslationListItem newItem = TranslationListItem(
       isLoading: true,
       data: null,
@@ -110,6 +126,19 @@ class TranslationsListState extends State<TranslationsList> {
       translations = [newItem, ...translations];
     });
 
+    Translation translation = Translation(
+      id: 'newniceid',
+      category: 'test',
+      text: text,
+      translate: [],
+      correctAnswers: 0,
+      shownTimes: 0,
+      translateRequestsCount: 1,
+      description: '',
+      dateAdded: DateTime.now().toUtc().toIso8601String(),
+      dateOfLastTranslate: DateTime.now().toUtc().toIso8601String(),
+    );
+
     GoogleTranslateService translator = getIt.get<GoogleTranslateService>();
 
     setState(() {
@@ -119,16 +148,43 @@ class TranslationsListState extends State<TranslationsList> {
     try {
       result = await translator.translate(text);
     } catch (_) {
-      listKey.currentState!.removeItem(
-        0,
-        (context, animation) => TranslationListTile(
-          item: newItem,
-          animation: animation,
-        ),
+      showModalBottomSheet(
+        context: context,
+        shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(16), topRight: Radius.circular(16))),
+        isDismissible: false,
+        isScrollControlled: true,
+        builder: (BuildContext context) {
+          return GenericConfirmation(
+            title: 'Translate Failed',
+            message: 'Do you whant to add translation manually?',
+            onConfirm: () {
+              Navigator.pop(context);
+              _addManualTranslation(
+                translation,
+                context,
+                newItem,
+              );
+            },
+            onReject: () {
+              Navigator.pop(context);
+              listKey.currentState!.removeItem(
+                0,
+                (context, animation) => TranslationListTile(
+                  item: newItem,
+                  animation: animation,
+                  onDelete: () {},
+                  onEdit: (_) {},
+                ),
+              );
+              setState(() {
+                translations.removeAt(0);
+              });
+            },
+          );
+        },
       );
-      setState(() {
-        translations.removeAt(0);
-      });
       return;
     } finally {
       setState(() {
@@ -136,18 +192,7 @@ class TranslationsListState extends State<TranslationsList> {
       });
     }
 
-    Translation translation = Translation(
-      id: 'newniceid',
-      category: 'test',
-      text: text,
-      translate: result,
-      correctAnswers: 0,
-      shownTimes: 0,
-      translateRequestsCount: 1,
-      description: '',
-      dateAdded: DateTime.now().toUtc().toIso8601String(),
-      dateOfLastTranslate: DateTime.now().toUtc().toIso8601String(),
-    );
+    translation = translation.copyWith(translate: result);
 
     setState(() {
       newItem.isLoading = false;
@@ -155,6 +200,73 @@ class TranslationsListState extends State<TranslationsList> {
     });
 
     widget.onAdd(translation);
+  }
+
+  void _removeItem(TranslationListItem item) {
+    int index = translations.indexOf(item);
+    if (index != -1) {
+      listKey.currentState!.removeItem(
+        index,
+        (context, animation) => TranslationListTile(
+          item: item,
+          animation: animation,
+          onDelete: () {},
+          onEdit: (_) {},
+        ),
+      );
+    }
+    setState(() {
+      translations.removeAt(index);
+    });
+  }
+
+  void _addManualTranslation(
+    Translation translation,
+    BuildContext context,
+    TranslationListItem newItem,
+  ) {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(16), topRight: Radius.circular(16))),
+      isDismissible: false,
+      isScrollControlled: true,
+      builder: (BuildContext context) {
+        return Wrap(
+          children: [
+            EditTranslation(
+                title: 'Add translation',
+                translation: translation,
+                onEdit: (Translation edited) {
+                  setState(() {
+                    newItem.isLoading = false;
+                    newItem.data = edited;
+                  });
+
+                  widget.onAdd(edited);
+
+                  Navigator.pop(context);
+                },
+                onCancel: () {
+                  Navigator.pop(context);
+                  listKey.currentState!.removeItem(
+                    0,
+                    (context, animation) => TranslationListTile(
+                      item: newItem,
+                      animation: animation,
+                      onDelete: () {},
+                      onEdit: (_) {},
+                    ),
+                  );
+                  setState(() {
+                    translations.removeAt(0);
+                  });
+                }),
+          ],
+        );
+      },
+    );
   }
 
   void _updateTranslated(TranslationListItem item) {
@@ -166,6 +278,8 @@ class TranslationsListState extends State<TranslationsList> {
         (context, animation) => TranslationListTile(
           item: item,
           animation: animation,
+          onDelete: () {},
+          onEdit: (_) {},
         ),
       );
 

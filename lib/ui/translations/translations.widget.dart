@@ -53,6 +53,9 @@ class TranslationsWidget extends StatelessWidget {
           onUpdate: (translation) {
             viewModel.onUpdate(translation);
           },
+          onDelete: (translation) {
+            viewModel.onDelete(translation);
+          },
         );
       },
     );
@@ -67,6 +70,7 @@ class _ViewModel {
   final void Function() onLoad;
   final void Function(Translation translation) onAdd;
   final void Function(Translation translation) onUpdate;
+  final void Function(Translation translation) onDelete;
 
   _ViewModel({
     required this.isLoading,
@@ -75,6 +79,7 @@ class _ViewModel {
     required this.onLoad,
     required this.onAdd,
     required this.onUpdate,
+    required this.onDelete,
   });
 
   factory _ViewModel.fromStore({required Store<AppState> store}) {
@@ -95,6 +100,9 @@ class _ViewModel {
       },
       onUpdate: (translation) {
         store.dispatch(EditTranslationAction(translation));
+      },
+      onDelete: (translation) {
+        store.dispatch(DeleteTranslationAction(translation.text));
       },
     );
   }
