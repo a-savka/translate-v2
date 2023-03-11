@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:translate_1/domain/models/errors/http_error.model.dart';
 import 'package:translate_1/domain/models/translation.model.dart';
-import 'package:translate_1/domain/services/libre_translate.service.dart';
+import 'package:translate_1/domain/services/google_translate.service.dart';
 import 'package:translate_1/main_di.dart';
 import 'package:translate_1/ui/translations/widgets/translation_input_field.dart';
 import 'package:translate_1/ui/translations/widgets/translation_list_tile.dart';
@@ -109,7 +110,7 @@ class TranslationsListState extends State<TranslationsList> {
       translations = [newItem, ...translations];
     });
 
-    LibreTranslateService translator = getIt.get<LibreTranslateService>();
+    GoogleTranslateService translator = getIt.get<GoogleTranslateService>();
 
     setState(() {
       isInProgress = true;

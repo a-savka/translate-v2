@@ -2,7 +2,7 @@ import 'package:translate_1/domain/models/translation.model.dart';
 import 'package:translate_1/domain/services/filesystem.service.dart';
 
 class TranslationsProvider {
-  final FilesystemService filesystem;
+  final FileSystemService filesystem;
 
   List<Translation>? _translations;
   bool _isLoaded = false;

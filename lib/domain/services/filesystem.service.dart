@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 
-class FilesystemService {
+class FileSystemService {
   Future<String?> pickFilePath() async {
     FilePickerResult? picked;
     try {
