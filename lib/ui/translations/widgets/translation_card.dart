@@ -58,10 +58,8 @@ class TranslationCard extends StatelessWidget {
                     ),
                     Container(
                       height: 0.5,
-                      color: Theme.of(context)
-                          .colorScheme
-                          .tertiary
-                          .withAlpha(0xA0),
+                      color:
+                          Theme.of(context).colorScheme.primary.withAlpha(0x30),
                     ),
                     const SizedBox(
                       height: 5,
@@ -76,8 +74,8 @@ class TranslationCard extends StatelessWidget {
                             dateFormat.format(DateTime.parse(
                                 translation.dateOfLastTranslate)),
                             style: TextStyle(
-                              color: _getColor(context),
-                              fontSize: 10,
+                              color: _getControlColor(context),
+                              fontSize: 12,
                             ),
                           ),
                           const Expanded(child: SizedBox()),
@@ -110,7 +108,7 @@ class TranslationCard extends StatelessWidget {
                               );
                             },
                             icon: const Icon(Icons.edit),
-                            color: _getColor(context),
+                            color: _getControlColor(context),
                             iconSize: 20,
                             constraints: const BoxConstraints(),
                             padding: const EdgeInsets.symmetric(
@@ -141,7 +139,7 @@ class TranslationCard extends StatelessWidget {
                               );
                             },
                             icon: const Icon(Icons.delete),
-                            color: _getColor(context),
+                            color: _getControlColor(context),
                             iconSize: 20,
                             constraints: const BoxConstraints(),
                             padding: const EdgeInsets.symmetric(
@@ -167,7 +165,8 @@ class TranslationCard extends StatelessWidget {
           child: Text(
             translation.text,
             // style: TextStyle(color: AppColors.tileColor.withAlpha(0xB0)),
-            style: TextStyle(color: _getColor(context)),
+            style: TextStyle(
+                color: _getColor(context), fontWeight: FontWeight.bold),
           ),
         ),
         Flexible(
@@ -187,7 +186,7 @@ class TranslationCard extends StatelessWidget {
     String caption,
     String data,
   ) {
-    final textStyle = TextStyle(color: _getColor(context));
+    final textStyle = TextStyle(color: _getColor(context), fontSize: 12);
 
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
@@ -214,5 +213,9 @@ class TranslationCard extends StatelessWidget {
 
   Color _getColor(BuildContext context) {
     return Theme.of(context).colorScheme.secondary;
+  }
+
+  Color _getControlColor(BuildContext context) {
+    return Theme.of(context).colorScheme.primary;
   }
 }

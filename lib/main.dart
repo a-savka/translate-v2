@@ -49,9 +49,11 @@ class MyApp extends StatelessWidget {
                 colorScheme:
                     ColorScheme.fromSwatch(primarySwatch: primaryColorSwatch)
                         .copyWith(
-                  secondary: primaryColorSwatch.shade300,
+                  secondary: primaryColorSwatch.shade200,
                   // tertiary: Colors.lime.shade200,
                   // secondary: Color(0xff3A6B35),
+                  // secondary: Color(0xcfe3856b),
+                  // secondary: Color(0xcfe3856b),
                   tertiary: const Color(0xFFE2D1F9),
                 ),
                 textTheme: const TextTheme(
