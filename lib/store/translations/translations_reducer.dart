@@ -2,7 +2,7 @@ import 'package:redux/redux.dart';
 import 'package:translate_1/store/translations/translations_actions.dart';
 import 'package:translate_1/store/translations/translations_state.dart';
 
-final translationsReducer = combineReducers([
+final translationsReducer = combineReducers<TranslationsState>([
   TypedReducer<TranslationsState, SetTranslationsAction>(_onSetTranslations),
   TypedReducer<TranslationsState, AddTranslationAction>(_onAddTranslation),
   TypedReducer<TranslationsState, EditTranslationAction>(_onEditTranslation),

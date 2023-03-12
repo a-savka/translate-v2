@@ -35,108 +35,123 @@ class TranslationCard extends StatelessWidget {
         ),
         SizedBox(
           height: 110,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              const SizedBox(
-                height: 14,
-              ),
-              _cardDataRow(
-                context,
-                'Total tests: ',
-                translation.shownTimes.toString(),
-              ),
-              _cardDataRow(
-                context,
-                'Correct answers: ',
-                translation.correctAnswers.toString(),
-              ),
-              const Expanded(
-                child: SizedBox(),
-              ),
-              SizedBox(
-                height: 30,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  crossAxisAlignment: CrossAxisAlignment.center,
+          child: !isOpen
+              ? const SizedBox()
+              : Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
                   children: [
-                    Text(
-                      dateFormat.format(
-                          DateTime.parse(translation.dateOfLastTranslate)),
-                      style: const TextStyle(color: Colors.blue, fontSize: 10),
+                    const SizedBox(
+                      height: 14,
                     ),
-                    const Expanded(child: SizedBox()),
-                    IconButton(
-                      onPressed: () {
-                        showModalBottomSheet(
-                          shape: const RoundedRectangleBorder(
-                              borderRadius: BorderRadius.only(
-                                  topLeft: Radius.circular(16),
-                                  topRight: Radius.circular(16))),
-                          isDismissible: false,
-                          isScrollControlled: true,
-                          context: context,
-                          builder: (BuildContext context) {
-                            return Wrap(
-                              children: [
-                                EditTranslation(
-                                    title: 'Edit translation',
-                                    translation: translation,
-                                    onEdit: (Translation edited) {
+                    _cardDataRow(
+                      context,
+                      'Total tests: ',
+                      translation.shownTimes.toString(),
+                    ),
+                    _cardDataRow(
+                      context,
+                      'Correct answers: ',
+                      translation.correctAnswers.toString(),
+                    ),
+                    const Expanded(
+                      child: SizedBox(),
+                    ),
+                    Container(
+                      height: 0.5,
+                      color: Theme.of(context)
+                          .colorScheme
+                          .tertiary
+                          .withAlpha(0xA0),
+                    ),
+                    const SizedBox(
+                      height: 5,
+                    ),
+                    SizedBox(
+                      height: 30,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Text(
+                            dateFormat.format(DateTime.parse(
+                                translation.dateOfLastTranslate)),
+                            style: TextStyle(
+                              color: _getColor(context),
+                              fontSize: 10,
+                            ),
+                          ),
+                          const Expanded(child: SizedBox()),
+                          IconButton(
+                            onPressed: () {
+                              showModalBottomSheet(
+                                shape: const RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.only(
+                                        topLeft: Radius.circular(16),
+                                        topRight: Radius.circular(16))),
+                                isDismissible: false,
+                                isScrollControlled: true,
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return Wrap(
+                                    children: [
+                                      EditTranslation(
+                                          title: 'Edit translation',
+                                          translation: translation,
+                                          onEdit: (Translation edited) {
+                                            Navigator.pop(context);
+                                            onEdit(edited);
+                                          },
+                                          onCancel: () {
+                                            Navigator.pop(context);
+                                          }),
+                                    ],
+                                  );
+                                },
+                              );
+                            },
+                            icon: const Icon(Icons.edit),
+                            color: _getColor(context),
+                            iconSize: 20,
+                            constraints: const BoxConstraints(),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 10, vertical: 5),
+                          ),
+                          IconButton(
+                            onPressed: () {
+                              showModalBottomSheet(
+                                context: context,
+                                shape: const RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.only(
+                                        topLeft: Radius.circular(16),
+                                        topRight: Radius.circular(16))),
+                                isDismissible: false,
+                                builder: (BuildContext context) {
+                                  return GenericConfirmation(
+                                    title: 'Please Confirm',
+                                    message: 'Delete this record?',
+                                    onConfirm: () {
                                       Navigator.pop(context);
-                                      onEdit(edited);
+                                      onDelete();
                                     },
-                                    onCancel: () {
+                                    onReject: () {
                                       Navigator.pop(context);
-                                    }),
-                              ],
-                            );
-                          },
-                        );
-                      },
-                      icon: const Icon(Icons.edit),
-                      color: Colors.blue.shade800,
-                      iconSize: 20,
-                      constraints: const BoxConstraints(),
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 10, vertical: 5),
-                    ),
-                    IconButton(
-                      onPressed: () {
-                        showModalBottomSheet(
-                          context: context,
-                          shape: const RoundedRectangleBorder(
-                              borderRadius: BorderRadius.only(
-                                  topLeft: Radius.circular(16),
-                                  topRight: Radius.circular(16))),
-                          isDismissible: false,
-                          builder: (BuildContext context) {
-                            return GenericConfirmation(
-                              title: 'Please Confirm',
-                              message: 'Delete this record?',
-                              onConfirm: () {
-                                Navigator.pop(context);
-                                onDelete();
-                              },
-                              onReject: () {
-                                Navigator.pop(context);
-                              },
-                            );
-                          },
-                        );
-                      },
-                      icon: const Icon(Icons.delete),
-                      color: Colors.blue.shade800,
-                      iconSize: 20,
-                      constraints: const BoxConstraints(),
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 10, vertical: 5),
-                    ),
+                                    },
+                                  );
+                                },
+                              );
+                            },
+                            icon: const Icon(Icons.delete),
+                            color: _getColor(context),
+                            iconSize: 20,
+                            constraints: const BoxConstraints(),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 10, vertical: 5),
+                          ),
+                        ],
+                      ),
+                    )
                   ],
                 ),
-              )
-            ],
-          ),
         )
       ],
     );
@@ -151,7 +166,8 @@ class TranslationCard extends StatelessWidget {
           fit: FlexFit.tight,
           child: Text(
             translation.text,
-            style: TextStyle(color: AppColors.tileColor.withAlpha(0xB0)),
+            // style: TextStyle(color: AppColors.tileColor.withAlpha(0xB0)),
+            style: TextStyle(color: _getColor(context)),
           ),
         ),
         Flexible(
@@ -159,7 +175,7 @@ class TranslationCard extends StatelessWidget {
           fit: FlexFit.tight,
           child: Text(
             translation.translate[0],
-            style: TextStyle(color: AppColors.tileColor.withAlpha(0xB0)),
+            style: TextStyle(color: _getColor(context)),
           ),
         ),
       ],
@@ -171,7 +187,7 @@ class TranslationCard extends StatelessWidget {
     String caption,
     String data,
   ) {
-    final textStyle = TextStyle(color: AppColors.tileColor.withAlpha(0xB0));
+    final textStyle = TextStyle(color: _getColor(context));
 
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
@@ -194,5 +210,9 @@ class TranslationCard extends StatelessWidget {
         )
       ],
     );
+  }
+
+  Color _getColor(BuildContext context) {
+    return Theme.of(context).colorScheme.secondary;
   }
 }

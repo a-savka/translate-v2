@@ -41,14 +41,15 @@ class TranslationListTileState extends State<TranslationListTile>
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 300),
           height: _isOpen ? 150 : 50,
-          margin: const EdgeInsets.fromLTRB(5, 0, 5, 0),
+          margin: const EdgeInsets.fromLTRB(5, 1, 5, 1),
           padding: const EdgeInsets.symmetric(horizontal: 10),
           decoration: BoxDecoration(
-            border: Border(
-              top: BorderSide(
-                  width: 1, color: AppColors.tileColor.withAlpha(0x30)),
-            ),
-            color: AppColors.tileColor.withAlpha(0x10),
+            borderRadius: BorderRadius.circular(5),
+            // border: Border(
+            //   top: BorderSide(
+            //       width: 1, color: AppColors.tileColor.withAlpha(0x30)),
+            // ),
+            color: Theme.of(context).colorScheme.tertiary.withAlpha(0x50),
           ),
           child: widget.item.isLoading
               ? const Align(

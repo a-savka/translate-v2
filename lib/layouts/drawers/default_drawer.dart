@@ -10,13 +10,20 @@ class DefaultDrawer extends StatelessWidget {
       child: ListView(
         padding: EdgeInsets.zero,
         children: [
-          const DrawerHeader(
-            decoration: BoxDecoration(color: Colors.blue),
-            child: Text('Menu'),
+          DrawerHeader(
+            decoration: BoxDecoration(color: Theme.of(context).primaryColor),
+            child: Text(
+              'Translator Menu',
+              style: Theme.of(context).appBarTheme.titleTextStyle,
+            ),
           ),
           ...MainNavigation.sideNav.map(
             (navItem) => ListTile(
-              title: Text(navItem.title),
+              title: Text(
+                navItem.title,
+                style: TextStyle(
+                    color: _toDark(Theme.of(context).colorScheme.tertiary)),
+              ),
               onTap: () {
                 Navigator.of(context).pushReplacementNamed(navItem.route);
               },
@@ -25,5 +32,12 @@ class DefaultDrawer extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  Color _toDark(Color source) {
+    return source
+        .withBlue(source.blue ~/ 1.3)
+        .withGreen(source.green ~/ 1.3)
+        .withRed(source.red ~/ 1.3);
   }
 }
