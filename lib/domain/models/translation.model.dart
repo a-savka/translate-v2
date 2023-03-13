@@ -79,6 +79,13 @@ class Translation {
       correctAnswers: correctAnswers ?? this.correctAnswers,
     );
   }
+
+  double getKnowledgeIndex() {
+    if (correctAnswers == 0) {
+      return 0;
+    }
+    return shownTimes / correctAnswers;
+  }
 }
 
 class Translations {

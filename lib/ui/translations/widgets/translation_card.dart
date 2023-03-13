@@ -216,6 +216,20 @@ class TranslationCard extends StatelessWidget {
   }
 
   Color _getControlColor(BuildContext context) {
-    return Theme.of(context).colorScheme.primary;
+    return _invert(Theme.of(context).colorScheme.secondary);
+  }
+
+  Color _toDark(Color source) {
+    return source
+        .withBlue(source.blue ~/ 1.4)
+        .withGreen(source.green ~/ 1.2)
+        .withRed(source.red ~/ 1.2);
+  }
+
+  Color _invert(Color source) {
+    return source
+        .withBlue((source.red + source.green) ~/ 2)
+        .withRed((source.blue + source.green) ~/ 2)
+        .withGreen((source.red + source.blue) ~/ 2);
   }
 }

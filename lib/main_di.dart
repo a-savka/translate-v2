@@ -3,12 +3,17 @@ import 'package:translate_1/domain/providers/translations.provider.dart';
 import 'package:translate_1/domain/services/filesystem.service.dart';
 import 'package:translate_1/domain/services/google_translate.service.dart';
 import 'package:translate_1/domain/services/libre_translate.service.dart';
+import 'package:translate_1/domain/services/skill_testing/skill_test_service.dart';
 import 'package:translate_1/domain/services/yandex_translate.service.dart';
 import 'package:translate_1/store/app_store.dart';
 
 final getIt = GetIt.instance;
 
 void setupDI() {
+  getIt.registerSingleton<SkillTestService>(
+    SkillTestService(),
+  );
+
   getIt.registerSingleton<LibreTranslateService>(
     LibreTranslateService(),
   );
