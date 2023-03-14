@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:translate_1/domain/models/translation.model.dart';
-import 'package:translate_1/ui/translations/widgets/colors.dart';
 import 'package:intl/intl.dart';
 import 'package:translate_1/ui/translations/widgets/edit_translation.dart';
 import 'package:translate_1/ui/translations/widgets/generic_confirmation.dart';
@@ -219,11 +218,11 @@ class TranslationCard extends StatelessWidget {
     return _invert(Theme.of(context).colorScheme.secondary);
   }
 
-  Color _toDark(Color source) {
+  Color _toDark(Color source, {double k = 1.3}) {
     return source
-        .withBlue(source.blue ~/ 1.4)
-        .withGreen(source.green ~/ 1.2)
-        .withRed(source.red ~/ 1.2);
+        .withBlue(source.blue ~/ k)
+        .withGreen(source.green ~/ k)
+        .withRed(source.red ~/ k);
   }
 
   Color _invert(Color source) {

@@ -1,41 +1,89 @@
+import 'package:translate_1/domain/models/question.model.dart';
 import 'package:translate_1/domain/models/translation.model.dart';
 import 'dart:math';
 
 class SkillTestService {
-  List<Translation> buildTest({
+  List<Question> buildTest({
     required List<Translation> source,
     required int count,
   }) {
+    List<Translation> result;
     if (count > source.length) {
-      return source;
+      result = source;
+    } else {
+      List<Translation> localSource = [...source];
+
+      List<Translation> latest = _getLatest(source: localSource, count: 10);
+      localSource = localSource
+          .where((local) => !latest.any((late) => late.text == local.text))
+          .toList();
+
+      List<Translation> weak = _getWeak(source: localSource, count: 10);
+      localSource = localSource
+          .where((local) => !weak.any((w) => w.text == local.text))
+          .toList();
+
+      List<Translation> good = _getGood(source: localSource, count: 3);
+      localSource = localSource
+          .where((local) => !good.any((g) => g.text == local.text))
+          .toList();
+
+      List<Translation> other = _getRandomSlice(
+        source: localSource,
+        count: 7,
+        slicePart: 1,
+      );
+
+      result = [
+        ...latest,
+        ...weak,
+        ...good,
+        ...other,
+      ];
     }
 
-    List<Translation> localSource = [...source];
-
-    List<Translation> latest = _getLatest(source: localSource, count: 10);
-    localSource = localSource
-        .where((local) => !latest.any((late) => late.text == local.text))
-        .toList();
-
-    List<Translation> weak = _getWeak(source: localSource, count: 10);
-    localSource = localSource
-        .where((local) => !weak.any((w) => w.text == local.text))
-        .toList();
-
-    List<Translation> good = _getGood(source: localSource, count: 3);
-    localSource = localSource
-        .where((local) => !good.any((g) => g.text == local.text))
-        .toList();
-
-    List<Translation> other = _getRandomSlice(
-      source: localSource,
-      count: 7,
-      slicePart: 1,
-    );
-
-    List<Translation> result = [...latest, ...weak, ...good, ...other];
     result.shuffle();
-    return result;
+    return result
+        .map((translation) => toQuestion(translation, source))
+        .toList();
+  }
+
+  Question toQuestion(
+    Translation translation,
+    List<Translation> allTranslations, {
+    bool reverseTest = false,
+  }) {
+    List<Translation> localTranslations = [...allTranslations];
+    localTranslations.shuffle();
+    if (localTranslations.length > 8) {
+      localTranslations = localTranslations.sublist(0, 8);
+    }
+    localTranslations = localTranslations
+        .where((element) => element.text != translation.text)
+        .toList();
+    if (localTranslations.length > 7) {
+      localTranslations = localTranslations.sublist(0, 7);
+    }
+
+    List<QuizOption> options = localTranslations
+        .map((t) => QuizOption(
+              text: reverseTest ? t.text : t.translate[0],
+              isValid: false,
+            ))
+        .toList();
+
+    options.add(QuizOption(
+      text: reverseTest ? translation.text : translation.translate[0],
+      isValid: true,
+    ));
+
+    options.shuffle();
+
+    return Question(
+      translation: translation,
+      text: reverseTest ? translation.translate[0] : translation.text,
+      options: options,
+    );
   }
 
   List<Translation> _getLatest({

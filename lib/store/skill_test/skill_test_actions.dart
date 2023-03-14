@@ -1,10 +1,10 @@
-import 'package:translate_1/domain/models/translation.model.dart';
+import 'package:translate_1/domain/models/question.model.dart';
 
 abstract class SkillTestAction {}
 
 class StartSkillTestAction extends SkillTestAction {
-  final List<Translation> translations;
-  StartSkillTestAction(this.translations);
+  final List<Question> questions;
+  StartSkillTestAction(this.questions);
 }
 
 class SkillTestAnswerAction extends SkillTestAction {

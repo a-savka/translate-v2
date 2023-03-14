@@ -15,7 +15,7 @@ class DefaultLayout extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Home Page'),
+        title: Text(title),
       ),
       drawer: const DefaultDrawer(),
       body: child,

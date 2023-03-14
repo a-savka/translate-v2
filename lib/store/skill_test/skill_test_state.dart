@@ -1,62 +1,90 @@
-import 'package:translate_1/domain/models/translation.model.dart';
+import 'package:translate_1/domain/models/question.model.dart';
+
+enum SkillTestStatus { pending, progress, done }
 
 class SkillTestState {
-  final List<Translation> translations;
+  final List<Question> questions;
   final int correctAnswers;
   final int wrongAnswers;
+  final int questionCount;
   final bool isDone;
   SkillTestState({
-    required this.translations,
+    required this.questions,
     required this.correctAnswers,
     required this.wrongAnswers,
+    required this.questionCount,
     required this.isDone,
   });
 
   factory SkillTestState.initialState() {
     return SkillTestState(
-      translations: [],
+      questions: [],
       correctAnswers: 0,
       wrongAnswers: 0,
+      questionCount: 0,
       isDone: false,
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
-      'translations':
-          translations.map((translation) => translation.toJson()).toList(),
+      'questions': questions.map((question) => question.toJson()).toList(),
       'correctAnswers': correctAnswers,
       'wrongAnswers': wrongAnswers,
+      'questionCount': questionCount,
       'isDone': isDone,
     };
   }
 
   factory SkillTestState.fromJson(Map<String, dynamic> json) {
     return SkillTestState(
-      translations: (json['translations'] as List<dynamic>)
-          .map((data) => Translation.fromJson(data))
+      questions: (json['questions'] as List<dynamic>)
+          .map((data) => Question.fromJson(data))
           .toList(),
       correctAnswers: json['correctAnswers'] as int,
       wrongAnswers: json['wrongAnswers'] as int,
+      questionCount: json['questionCount'] as int,
       isDone: json['isDone'] as bool,
     );
   }
 
   SkillTestState copyWith({
-    List<Translation>? translations,
+    List<Question>? questions,
     int? correctAnswers,
     int? wrongAnswers,
+    int? questionCount,
     bool? isDone,
   }) {
     return SkillTestState(
-      translations: translations ?? this.translations,
+      questions: questions ?? this.questions,
       correctAnswers: correctAnswers ?? this.correctAnswers,
       wrongAnswers: wrongAnswers ?? this.wrongAnswers,
+      questionCount: questionCount ?? this.questionCount,
       isDone: isDone ?? this.isDone,
     );
   }
 
-  Translation? get translation {
-    return translations.isNotEmpty ? translations[0] : null;
+  SkillTestStatus get status {
+    if (questions.isEmpty) {
+      if (isDone) {
+        return SkillTestStatus.done;
+      }
+      return SkillTestStatus.pending;
+    }
+    return SkillTestStatus.progress;
+  }
+
+  Question? get currentQuestion {
+    if (status != SkillTestStatus.progress || questions.isEmpty) {
+      return null;
+    }
+    return questions[0];
+  }
+
+  int get currentQuestionNumber {
+    if (status != SkillTestStatus.progress) {
+      return 0;
+    }
+    return questionCount - questions.length + 1;
   }
 }

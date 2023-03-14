@@ -12,9 +12,10 @@ SkillTestState _startSkillTest(
   StartSkillTestAction action,
 ) {
   return state.copyWith(
-    translations: action.translations,
+    questions: action.questions,
     correctAnswers: 0,
     wrongAnswers: 0,
+    questionCount: action.questions.length,
     isDone: false,
   );
 }
@@ -24,9 +25,9 @@ SkillTestState _skillTestAnswer(
   SkillTestAnswerAction action,
 ) {
   return state.copyWith(
-    translations: state.translations.sublist(1),
+    questions: state.questions.sublist(1),
     correctAnswers: state.correctAnswers + (action.isCorrect ? 1 : 0),
     wrongAnswers: state.wrongAnswers + (action.isCorrect ? 0 : 1),
-    isDone: state.translations.length == 1,
+    isDone: state.questions.length == 1,
   );
 }
