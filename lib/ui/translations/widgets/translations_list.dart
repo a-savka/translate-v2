@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:translate_1/domain/models/translation.model.dart';
+import 'package:translate_1/domain/services/cuid_service.dart';
 import 'package:translate_1/domain/services/google_translate.service.dart';
 import 'package:translate_1/main_di.dart';
 import 'package:translate_1/ui/translations/widgets/edit_translation.dart';
@@ -13,6 +14,7 @@ class TranslationsList extends StatefulWidget {
   final void Function(Translation translation) onAdd;
   final void Function(Translation translation) onUpdate;
   final void Function(Translation translation) onDelete;
+
   const TranslationsList({
     required this.translations,
     required this.onAdd,
@@ -30,6 +32,8 @@ class TranslationsList extends StatefulWidget {
 class TranslationsListState extends State<TranslationsList> {
   late List<TranslationListItem> translations;
   final GlobalKey<AnimatedListState> listKey = GlobalKey<AnimatedListState>();
+  final CuidService cuidService = getIt.get<CuidService>();
+
   bool isInProgress = false;
 
   @override
@@ -127,7 +131,7 @@ class TranslationsListState extends State<TranslationsList> {
     });
 
     Translation translation = Translation(
-      id: 'newniceid',
+      id: cuidService.newCuid(),
       category: 'test',
       text: text,
       translate: [],

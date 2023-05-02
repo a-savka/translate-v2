@@ -6,10 +6,15 @@ import 'package:translate_1/domain/services/libre_translate.service.dart';
 import 'package:translate_1/domain/services/skill_testing/skill_test_service.dart';
 import 'package:translate_1/domain/services/yandex_translate.service.dart';
 import 'package:translate_1/store/app_store.dart';
+import 'package:translate_1/domain/services/cuid_service.dart';
 
 final getIt = GetIt.instance;
 
 void setupDI() {
+  getIt.registerSingleton<CuidService>(
+    CuidService(),
+  );
+
   getIt.registerSingleton<SkillTestService>(
     SkillTestService(),
   );
