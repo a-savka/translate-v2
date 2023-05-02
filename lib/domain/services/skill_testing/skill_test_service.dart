@@ -7,30 +7,37 @@ class SkillTestService {
     required List<Translation> source,
     required int count,
   }) {
+    int latestCount = (count * 0.33).toInt();
+    int weakCount = (count * 0.33).toInt();
+    int goodCount = (count * 0.1).toInt();
+    int sum = latestCount + weakCount + goodCount;
+    int otherCount = count > sum ? count - sum : 0;
+
     List<Translation> result;
     if (count > source.length) {
       result = source;
     } else {
       List<Translation> localSource = [...source];
 
-      List<Translation> latest = _getLatest(source: localSource, count: 10);
+      List<Translation> latest =
+          _getLatest(source: localSource, count: latestCount);
       localSource = localSource
           .where((local) => !latest.any((late) => late.text == local.text))
           .toList();
 
-      List<Translation> weak = _getWeak(source: localSource, count: 10);
+      List<Translation> weak = _getWeak(source: localSource, count: weakCount);
       localSource = localSource
           .where((local) => !weak.any((w) => w.text == local.text))
           .toList();
 
-      List<Translation> good = _getGood(source: localSource, count: 3);
+      List<Translation> good = _getGood(source: localSource, count: goodCount);
       localSource = localSource
           .where((local) => !good.any((g) => g.text == local.text))
           .toList();
 
       List<Translation> other = _getRandomSlice(
         source: localSource,
-        count: 7,
+        count: otherCount,
         slicePart: 1,
       );
 
@@ -145,7 +152,7 @@ class SkillTestService {
     required int count,
     required double slicePart,
   }) {
-    int candidateCount = (source.length * 0.3).toInt();
+    int candidateCount = (source.length * slicePart).toInt();
     if (candidateCount < count) {
       candidateCount = count;
     }
@@ -154,7 +161,7 @@ class SkillTestService {
     List<Translation> result = [];
     Random random = Random();
 
-    while (result.length < candidateCount) {
+    while (result.length < count) {
       int idx = random.nextInt(localSource.length);
       result.add(localSource[idx]);
       localSource.removeAt(idx);

@@ -12,6 +12,8 @@ final translationsReducer = combineReducers<TranslationsState>([
   TypedReducer<TranslationsState, LoadTranslationsFailAction>(_onLoadFail),
   TypedReducer<TranslationsState, DeleteTranslationAction>(
       _onDeleteTranslation),
+  TypedReducer<TranslationsState, TranslationAnswerAction>(
+      _onTranslationAnswer),
 ]);
 
 TranslationsState _onSetTranslations(
@@ -56,11 +58,29 @@ TranslationsState _onEditTranslation(
   );
 }
 
+TranslationsState _onTranslationAnswer(
+  TranslationsState state,
+  TranslationAnswerAction action,
+) {
+  return state.copyWith(
+    translations: state.translations!.map(
+      (e) {
+        if (e.text == action.text) {
+          return e.copyWith(
+            shownTimes: e.shownTimes + 1,
+            correctAnswers: e.correctAnswers + (action.isValid ? 1 : 0),
+          );
+        }
+        return e;
+      },
+    ).toList(),
+  );
+}
+
 TranslationsState _onDeleteTranslation(
   TranslationsState state,
   DeleteTranslationAction action,
 ) {
-  print('delete reducer for: ${action.text}');
   return state.copyWith(
     translations: state.translations
         ?.where((element) => element.text != action.text)

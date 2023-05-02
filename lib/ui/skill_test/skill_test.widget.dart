@@ -8,6 +8,7 @@ import 'package:translate_1/main_di.dart';
 import 'package:translate_1/store/app_state.dart';
 import 'package:translate_1/store/skill_test/skill_test_actions.dart';
 import 'package:translate_1/store/skill_test/skill_test_state.dart';
+import 'package:translate_1/store/translations/translations_actions.dart';
 import 'package:translate_1/store/translations/translations_state.dart';
 import 'package:translate_1/ui/generic/widgets/data_line.dart';
 import 'package:translate_1/ui/skill_test/widgets/quiz_widget.dart';
@@ -88,8 +89,8 @@ class SkillTestWidget extends StatelessWidget {
   Widget _renderTest(BuildContext context, _ViewModel viewModel) {
     return QuizWidget(
       question: viewModel.question!,
-      onAnswer: (bool isValid) {
-        viewModel.onAnswer(isValid);
+      onAnswer: (bool isValid, String text) {
+        viewModel.onAnswer(isValid, text);
       },
       currentQuestionNumber: viewModel.currentQuestionNumber,
       correctAnswers: viewModel.correctAnswers,
@@ -119,7 +120,7 @@ class _ViewModel {
   final int currentQuestionNumber;
   final List<Translation>? translations;
   final void Function(List<Question> questions) onStartTest;
-  final void Function(bool isValid) onAnswer;
+  final void Function(bool isValid, String text) onAnswer;
 
   _ViewModel({
     required this.question,
@@ -147,8 +148,9 @@ class _ViewModel {
       onStartTest: (questions) {
         store.dispatch(StartSkillTestAction(questions));
       },
-      onAnswer: (isValid) {
+      onAnswer: (isValid, text) {
         store.dispatch(SkillTestAnswerAction(isValid));
+        store.dispatch(TranslationAnswerAction(text: text, isValid: isValid));
       },
     );
   }

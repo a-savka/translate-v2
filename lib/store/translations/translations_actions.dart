@@ -17,6 +17,15 @@ class EditTranslationAction extends TranslationsAction {
   EditTranslationAction(this.translation);
 }
 
+class TranslationAnswerAction extends TranslationsAction {
+  final String text;
+  final bool isValid;
+  TranslationAnswerAction({
+    required this.text,
+    required this.isValid,
+  });
+}
+
 class DeleteTranslationAction extends TranslationsAction {
   final String text;
   DeleteTranslationAction(this.text);

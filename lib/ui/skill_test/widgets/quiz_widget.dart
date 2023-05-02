@@ -9,7 +9,7 @@ class QuizWidget extends StatefulWidget {
   final int correctAnswers;
   final int wrongAnswers;
   final int questionCount;
-  final void Function(bool isValid) onAnswer;
+  final void Function(bool isValid, String text) onAnswer;
   const QuizWidget({
     required this.question,
     required this.onAnswer,
@@ -93,13 +93,16 @@ class QuizWidgetState extends State<QuizWidget> {
                     style: ElevatedButton.styleFrom(
                       minimumSize: const Size.fromHeight(50),
                     ),
-                    onPressed: () {
-                      setState(() {
-                        completedQuestion = widget.question;
-                        completedNumber = widget.currentQuestionNumber;
-                      });
-                      widget.onAnswer(isValidSelected);
-                    },
+                    onPressed: selectedOptionText == null
+                        ? null
+                        : () {
+                            setState(() {
+                              completedQuestion = widget.question;
+                              completedNumber = widget.currentQuestionNumber;
+                            });
+                            widget.onAnswer(isValidSelected,
+                                widget.question.translation.text);
+                          },
                     child: const Text('Send'),
                   )
                 : ElevatedButton(
@@ -109,6 +112,7 @@ class QuizWidgetState extends State<QuizWidget> {
                     onPressed: () {
                       setState(() {
                         completedQuestion = null;
+                        selectedOptionText = null;
                       });
                     },
                     child: const Text('OK'),
