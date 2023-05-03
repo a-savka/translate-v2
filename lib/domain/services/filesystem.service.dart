@@ -18,6 +18,16 @@ class FileSystemService {
     return picked.paths.first;
   }
 
+  Future<String?> pickDirectoryPath() async {
+    String? picked;
+    try {
+      picked = await FilePicker.platform.getDirectoryPath();
+    } catch (_) {
+      print('Picking directory failed');
+    }
+    return picked;
+  }
+
   Future<String> readTextFile(String path) async {
     File file = File(path);
     String contents = await file.readAsString();
@@ -34,5 +44,15 @@ class FileSystemService {
       return {'data': json};
     }
     return json;
+  }
+
+  Future<void> writeTextFile(String path, String body) async {
+    File file = File(path);
+    await file.writeAsString(body);
+  }
+
+  Future<void> writeJsonFile(String path, Map<String, dynamic> contents) async {
+    final body = jsonEncode(contents);
+    await writeTextFile(path, body);
   }
 }

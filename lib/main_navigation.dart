@@ -14,9 +14,11 @@ abstract class MainNavigationRouteNames {
 class SideNavItem {
   final String route;
   final String title;
+  final bool requireTranslations;
   const SideNavItem({
     required this.route,
     required this.title,
+    required this.requireTranslations,
   });
 }
 
@@ -25,10 +27,12 @@ class MainNavigation {
     SideNavItem(
       title: 'Home',
       route: MainNavigationRouteNames.home,
+      requireTranslations: false,
     ),
     SideNavItem(
       title: 'Skill Test',
       route: MainNavigationRouteNames.skillTest,
+      requireTranslations: true,
     ),
   ];
 

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:translate_1/keys.dart';
 import 'package:translate_1/layouts/drawers/default_drawer.dart';
 
 class DefaultLayout extends StatelessWidget {
@@ -16,6 +17,7 @@ class DefaultLayout extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: mainScaffoldKey,
       appBar: AppBar(
         title: Text(title),
         actions: menuItems == null
