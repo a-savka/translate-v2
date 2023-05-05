@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
+import 'package:intl/intl.dart';
 import 'package:redux/redux.dart';
 import 'package:translate_1/domain/models/translation.model.dart';
 import 'package:translate_1/domain/services/filesystem.service.dart';
@@ -145,14 +146,20 @@ class DefaultDrawerState extends State<DefaultDrawer> {
             borderRadius: BorderRadius.only(
                 topLeft: Radius.circular(16), topRight: Radius.circular(16))),
         builder: (context) {
+          final DateTime nowDate = DateTime.now();
+          final DateFormat formatter = DateFormat('yyyy-MM');
+          final String datePart = formatter.format(nowDate);
           return Padding(
             padding: EdgeInsets.fromLTRB(
                 0, 0, 0, MediaQuery.of(context).viewInsets.bottom),
             child: GenericPrompt(
               title: 'Specify file name',
-              initialValue: 'translations',
+              initialValue: 'translations-$datePart',
               onConfirm: (String? value) {
                 result = value;
+                if (result != null && result!.endsWith('.json')) {
+                  result = result!.substring(0, result!.length - 5);
+                }
                 Navigator.of(context).pop();
               },
               onReject: () {
