@@ -10,6 +10,7 @@ import 'package:translate_1/main_di.dart';
 import 'package:translate_1/main_navigation.dart';
 import 'package:translate_1/store/app_state.dart';
 import 'package:translate_1/ui/generic/widgets/generic_confirmation.dart';
+import 'package:translate_1/ui/generic/widgets/generic_prompt.dart';
 
 class DefaultDrawer extends StatefulWidget {
   const DefaultDrawer({Key? key}) : super(key: key);
@@ -62,20 +63,23 @@ class DefaultDrawerState extends State<DefaultDrawer> {
                               getIt.get<FileSystemService>();
                           String? path = await fileSystem.pickDirectoryPath();
                           if (path != null) {
-                            path = '$path/translations.json';
-                            final fileExists = await File(path).exists();
-                            final operationConfirmed =
-                                await _confirmFileOperation(fileExists);
-                            if (operationConfirmed &&
-                                viewModel.translations != null) {
-                              Translations translations =
-                                  Translations(data: viewModel.translations!);
-                              await fileSystem.writeJsonFile(
-                                  path, translations.toJson());
-                            }
-                            if (mainScaffoldKey.currentState != null &&
-                                mainScaffoldKey.currentState!.isDrawerOpen) {
-                              mainScaffoldKey.currentState!.closeDrawer();
+                            String? fileName = await _requestFileName();
+                            if (fileName != null) {
+                              path = '$path/$fileName.json';
+                              final fileExists = await File(path).exists();
+                              final operationConfirmed =
+                                  await _confirmFileOperation(fileExists);
+                              if (operationConfirmed &&
+                                  viewModel.translations != null) {
+                                Translations translations =
+                                    Translations(data: viewModel.translations!);
+                                await fileSystem.writeJsonFile(
+                                    path, translations.toJson());
+                              }
+                              if (mainScaffoldKey.currentState != null &&
+                                  mainScaffoldKey.currentState!.isDrawerOpen) {
+                                mainScaffoldKey.currentState!.closeDrawer();
+                              }
                             }
                           }
                         })
@@ -128,6 +132,40 @@ class DefaultDrawerState extends State<DefaultDrawer> {
       return result;
     } else {
       return false;
+    }
+  }
+
+  Future<String?> _requestFileName() async {
+    String? result;
+    if (mounted) {
+      await showModalBottomSheet(
+        context: context,
+        isScrollControlled: true,
+        shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(16), topRight: Radius.circular(16))),
+        builder: (context) {
+          return Padding(
+            padding: EdgeInsets.fromLTRB(
+                0, 0, 0, MediaQuery.of(context).viewInsets.bottom),
+            child: GenericPrompt(
+              title: 'Specify file name',
+              initialValue: 'translations',
+              onConfirm: (String? value) {
+                result = value;
+                Navigator.of(context).pop();
+              },
+              onReject: () {
+                result = null;
+                Navigator.of(context).pop();
+              },
+            ),
+          );
+        },
+      );
+      return result;
+    } else {
+      return null;
     }
   }
 }
