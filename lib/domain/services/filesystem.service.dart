@@ -1,6 +1,10 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:file_picker/file_picker.dart';
+import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:translate_1/ui/generic/widgets/generic_prompt.dart';
+import 'package:translate_1/ui/generic/widgets/generic_confirmation.dart';
 
 class FileSystemService {
   Future<String?> pickFilePath() async {
@@ -54,5 +58,72 @@ class FileSystemService {
   Future<void> writeJsonFile(String path, Map<String, dynamic> contents) async {
     final body = jsonEncode(contents);
     await writeTextFile(path, body);
+  }
+
+  Future<String?> requestFileName(BuildContext context) async {
+    String? result;
+    await showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(16), topRight: Radius.circular(16))),
+      builder: (context) {
+        final DateTime nowDate = DateTime.now();
+        final DateFormat formatter = DateFormat('yyyy-MM');
+        final String datePart = formatter.format(nowDate);
+        return Padding(
+          padding: EdgeInsets.fromLTRB(
+              0, 0, 0, MediaQuery.of(context).viewInsets.bottom),
+          child: GenericPrompt(
+            title: 'Specify file name',
+            initialValue: 'translations-$datePart',
+            onConfirm: (String? value) {
+              result = value;
+              if (result != null && result!.endsWith('.json')) {
+                result = result!.substring(0, result!.length - 5);
+              }
+              Navigator.of(context).pop();
+            },
+            onReject: () {
+              result = null;
+              Navigator.of(context).pop();
+            },
+          ),
+        );
+      },
+    );
+    return result;
+  }
+
+  Future<bool> confirmFileOverwrite(
+      bool fileExists, BuildContext context) async {
+    if (!fileExists) {
+      return true;
+    }
+
+    bool result = false;
+    await showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(16), topRight: Radius.circular(16))),
+      builder: (context) {
+        return GenericConfirmation(
+          title: 'File already exists',
+          message: 'Overwrite the file?',
+          onConfirm: () {
+            result = true;
+            Navigator.of(context).pop();
+          },
+          onReject: () {
+            result = false;
+            Navigator.of(context).pop();
+          },
+        );
+      },
+    );
+    return result;
   }
 }
