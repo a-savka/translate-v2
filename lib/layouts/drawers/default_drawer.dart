@@ -5,7 +5,7 @@ import 'package:flutter_redux/flutter_redux.dart';
 import 'package:redux/redux.dart';
 import 'package:translate_1/domain/models/translation.model.dart';
 import 'package:translate_1/domain/services/filesystem.service.dart';
-import 'package:translate_1/keys.dart';
+import 'package:translate_1/domain/services/scaffold_service.dart';
 import 'package:translate_1/main_di.dart';
 import 'package:translate_1/main_navigation.dart';
 import 'package:translate_1/store/app_state.dart';
@@ -86,6 +86,7 @@ class DefaultDrawerState extends State<DefaultDrawer> {
 
   Future<void> _saveToFile(List<Translation>? translationsList) async {
     final FileSystemService fileSystem = getIt.get<FileSystemService>();
+    final ScaffoldService scaffoldService = getIt.get<ScaffoldService>();
     String? path = await fileSystem.pickDirectoryPath();
     if (path != null && mounted) {
       String? fileName = await fileSystem.requestFileName(context);
@@ -100,16 +101,14 @@ class DefaultDrawerState extends State<DefaultDrawer> {
             await fileSystem.writeJsonFile(path, translations.toJson());
           }
         }
-        if (mainScaffoldKey.currentState != null &&
-            mainScaffoldKey.currentState!.isDrawerOpen) {
-          mainScaffoldKey.currentState!.closeDrawer();
-        }
+        scaffoldService.closeDrawer();
       }
     }
   }
 
   Future<void> _loadFromFile(_ViewModel viewModel) async {
     final FileSystemService fileSystem = getIt.get<FileSystemService>();
+    final ScaffoldService scaffoldService = getIt.get<ScaffoldService>();
     bool operationAllowed = true;
     if (viewModel.translations != null) {
       operationAllowed = await fileSystem.confirmContentReload(context);
@@ -117,10 +116,7 @@ class DefaultDrawerState extends State<DefaultDrawer> {
     if (operationAllowed) {
       await viewModel.onLoad();
     }
-    if (mainScaffoldKey.currentState != null &&
-        mainScaffoldKey.currentState!.isDrawerOpen) {
-      mainScaffoldKey.currentState!.closeDrawer();
-    }
+    scaffoldService.closeDrawer();
   }
 }
 

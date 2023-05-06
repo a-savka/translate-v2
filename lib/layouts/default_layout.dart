@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:translate_1/keys.dart';
+import 'package:translate_1/domain/services/scaffold_service.dart';
 import 'package:translate_1/layouts/drawers/default_drawer.dart';
+import 'package:translate_1/main_di.dart';
 
 class DefaultLayout extends StatelessWidget {
   final Widget child;
@@ -16,8 +17,9 @@ class DefaultLayout extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scaffoldService = getIt.get<ScaffoldService>();
     return Scaffold(
-      key: mainScaffoldKey,
+      key: scaffoldService.makeScaffoldKey(),
       appBar: AppBar(
         title: Text(title),
         actions: menuItems == null
