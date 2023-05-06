@@ -9,6 +9,7 @@ import 'package:translate_1/keys.dart';
 import 'package:translate_1/main_di.dart';
 import 'package:translate_1/main_navigation.dart';
 import 'package:translate_1/store/app_state.dart';
+import 'package:translate_1/store/translations/translations_actions.dart';
 
 class DefaultDrawer extends StatefulWidget {
   const DefaultDrawer({Key? key}) : super(key: key);
@@ -59,6 +60,13 @@ class DefaultDrawerState extends State<DefaultDrawer> {
                         onTap: () => _saveToFile(viewModel.translations),
                       )
                     : const SizedBox(),
+                ListTile(
+                  title: Text(
+                    'Load from File',
+                    style: _titleTextStyle(context),
+                  ),
+                  onTap: () => _loadFromFile(viewModel),
+                ),
               ],
             ),
           );
@@ -76,7 +84,7 @@ class DefaultDrawerState extends State<DefaultDrawer> {
     return TextStyle(color: _toDark(Theme.of(context).colorScheme.tertiary));
   }
 
-  void _saveToFile(List<Translation>? translationsList) async {
+  Future<void> _saveToFile(List<Translation>? translationsList) async {
     final FileSystemService fileSystem = getIt.get<FileSystemService>();
     String? path = await fileSystem.pickDirectoryPath();
     if (path != null && mounted) {
@@ -99,21 +107,45 @@ class DefaultDrawerState extends State<DefaultDrawer> {
       }
     }
   }
+
+  Future<void> _loadFromFile(_ViewModel viewModel) async {
+    final FileSystemService fileSystem = getIt.get<FileSystemService>();
+    bool operationAllowed = true;
+    if (viewModel.translations != null) {
+      operationAllowed = await fileSystem.confirmContentReload(context);
+    }
+    if (operationAllowed) {
+      await viewModel.onLoad();
+    }
+    if (mainScaffoldKey.currentState != null &&
+        mainScaffoldKey.currentState!.isDrawerOpen) {
+      mainScaffoldKey.currentState!.closeDrawer();
+    }
+  }
 }
 
 class _ViewModel {
   final bool hasTranslations;
   final List<Translation>? translations;
+  final Future<void> Function() onLoad;
 
   _ViewModel({
     required this.hasTranslations,
     required this.translations,
+    required this.onLoad,
   });
 
   factory _ViewModel.fromStore({required Store<AppState> store}) {
     return _ViewModel(
       hasTranslations: store.state.translationsState.hasTranslations(),
       translations: store.state.translationsState.translations,
+      onLoad: () async {
+        final FileSystemService fileSystem = getIt.get<FileSystemService>();
+        final path = await fileSystem.pickFilePath();
+        if (path != null) {
+          store.dispatch(LoadTranslationsAction(path));
+        }
+      },
     );
   }
 }

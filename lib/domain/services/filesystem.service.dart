@@ -126,4 +126,30 @@ class FileSystemService {
     );
     return result;
   }
+
+  Future<bool> confirmContentReload(BuildContext context) async {
+    bool result = false;
+    await showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(16), topRight: Radius.circular(16))),
+      builder: (context) {
+        return GenericConfirmation(
+          title: 'Translations already opened',
+          message: 'Replace current translations? Unsaved data will be lost.',
+          onConfirm: () {
+            result = true;
+            Navigator.of(context).pop();
+          },
+          onReject: () {
+            result = false;
+            Navigator.of(context).pop();
+          },
+        );
+      },
+    );
+    return result;
+  }
 }
